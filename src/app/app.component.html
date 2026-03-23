@@ -56,8 +56,11 @@
             <h3>{{ p.name }}</h3>
             <p class="price">${{ p.price.toFixed(2) }}</p>
             <p class="rating">? {{ p.rating }}</p>
+            <div class="qty-entry">
+              <input type="number" min="1" max="99" [(ngModel)]="productQuantities[p.id]" (change)="setProductQty(p, productQuantities[p.id])" />
+            </div>
             <div class="card-actions">
-              <button class="btn-primary" (click)="addToCart(p)">Add</button>
+              <button class="btn-primary" (click)="addToCart(p, getProductQty(p))">Add ({{ getProductQty(p) }})</button>
               <button class="btn-secondary" (click)="viewProductDetails(p)">Details</button>
             </div>
           </div>
@@ -104,16 +107,19 @@
       <article *ngFor="let p of filteredProducts" class="product-card">
         <img [src]="p.image" [alt]="p.name" />
         <div class="product-card-body">
-          <small class="category-label">{{ p.category | titlecase }}</small>
-          <h3>{{ p.name }}</h3>
-          <p class="description">{{ p.description }}</p>
-          <p class="price">${{ p.price.toFixed(2) }}</p>
-          <p class="rating">? {{ p.rating }}</p>
-          <div class="card-actions">
-            <button class="btn-primary" (click)="addToCart(p)">Add to Cart</button>
-            <button class="btn-secondary" (click)="viewProductDetails(p)">View Details</button>
+            <small class="category-label">{{ p.category | titlecase }}</small>
+            <h3>{{ p.name }}</h3>
+            <p class="description">{{ p.description }}</p>
+            <p class="price">${{ p.price.toFixed(2) }}</p>
+            <p class="rating">? {{ p.rating }}</p>
+            <div class="qty-entry">
+              <input type="number" min="1" max="99" [(ngModel)]="productQuantities[p.id]" (change)="setProductQty(p, productQuantities[p.id])" />
+            </div>
+            <div class="card-actions">
+              <button class="btn-primary" (click)="addToCart(p, getProductQty(p))">Add to Cart ({{ getProductQty(p) }})</button>
+              <button class="btn-secondary" (click)="viewProductDetails(p)">View Details</button>
+            </div>
           </div>
-        </div>
       </article>
     </div>
     <p *ngIf="filteredProducts.length === 0" class="no-results">No products found in this category.</p>
@@ -137,14 +143,172 @@
         </div>
         <div class="stock-info">
           <p><strong>In Stock:</strong> {{ selectedProduct.inventory }} items</p>
-          <p *ngIf="selectedProduct.nearbyAvailable" class="available">? Available at your store</p>
-          <p *ngIf="!selectedProduct.nearbyAvailable" class="lowstock">?? Limited availability</p>
+          <p *ngIf="selectedProduct.nearbyAvailable" class="available">✅ Available at your store</p>
+          <p *ngIf="!selectedProduct.nearbyAvailable" class="lowstock">⚠️ Limited availability</p>
         </div>
         <div class="details-actions">
           <button class="btn-primary btn-large" (click)="addToCart(selectedProduct)">Add to Cart</button>
           <button class="btn-secondary btn-large" (click)="setScreen('home')">Continue Shopping</button>
         </div>
       </div>
+    </div>
+  </main>
+
+  <!-- CART PAGE -->
+  <main class="main-content cart-view" *ngIf="screen === 'cart'">
+    <div class="cart-header">
+      <button class="back-link" (click)="setScreen('home')">← Continue Shopping</button>
+      <h2>Shopping Cart</h2>
+    </div>
+
+    <div class="cart-empty" *ngIf="cart.length === 0">
+      <p>Your cart is empty. Start adding great GloboMart items!</p>
+      <button class="btn-primary" (click)="setScreen('home')">Browse Products</button>
+    </div>
+
+    <div class="cart-content" *ngIf="cart.length > 0">
+      <div class="cart-items">
+        <article *ngFor="let item of cart" class="cart-item-row">
+          <img [src]="item.product.image" [alt]="item.product.name" />
+          <div class="item-info">
+            <h4>{{ item.product.name }}</h4>
+            <p class="item-price">${{ item.product.price.toFixed(2) }} each</p>
+          </div>
+          <div class="qty-controls">
+            <button (click)="updateQty(item, -1)">−</button>
+            <span>{{ item.qty }}</span>
+            <button (click)="updateQty(item, 1)">+</button>
+          </div>
+          <p class="item-total">${{ (item.product.price * item.qty).toFixed(2) }}</p>
+          <button class="btn-remove" (click)="removeFromCart(item)">Remove</button>
+        </article>
+      </div>
+
+      <div class="cart-summary-section">
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <strong>${{ cartTotal.toFixed(2) }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>Shipping:</span>
+          <strong>Free</strong>
+        </div>
+        <div class="summary-row total">
+          <span>Total:</span>
+          <strong>${{ cartTotal.toFixed(2) }}</strong>
+        </div>
+        <button class="btn-primary btn-checkout" (click)="startCheckout()">Proceed to Checkout</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- CHECKOUT PAGE -->
+  <main class="main-content checkout-view" *ngIf="screen === 'checkout'">
+    <div class="checkout-header">
+      <button class="back-link" (click)="prevCheckoutStep()">← Back</button>
+      <h2>Checkout</h2>
+    </div>
+
+    <div class="checkout-progress">
+      <div class="progress-step" [class.active]="checkoutStep >= 0" [class.completed]="checkoutStep > 0">1. Address</div>
+      <div class="progress-step" [class.active]="checkoutStep >= 1" [class.completed]="checkoutStep > 1">2. Payment</div>
+      <div class="progress-step" [class.active]="checkoutStep >= 2">3. Review</div>
+    </div>
+
+    <!-- STEP 1: ADDRESS -->
+    <div class="checkout-step" *ngIf="checkoutStep === 0">
+      <h3>Delivery Address</h3>
+      <textarea placeholder="Enter your delivery address" [(ngModel)]="selectedAddress" rows="3"></textarea>
+      
+      <h3>Fulfillment Method</h3>
+      <div class="radio-group">
+        <label>
+          <input type="radio" name="delivery" value="home" [(ngModel)]="deliveryOption" />
+          <span>Home Delivery (Free)</span>
+        </label>
+        <label>
+          <input type="radio" name="delivery" value="pickup" [(ngModel)]="deliveryOption" />
+          <span>Pick up at {{ selectedStore.name }}</span>
+        </label>
+      </div>
+
+      <button class="btn-primary btn-full" (click)="nextCheckoutStep()">Continue to Payment</button>
+    </div>
+
+    <!-- STEP 2: PAYMENT -->
+    <div class="checkout-step" *ngIf="checkoutStep === 1">
+      <h3>Payment Method</h3>
+      <div class="radio-group">
+        <label>
+          <input type="radio" name="payment" value="card" [(ngModel)]="paymentMethod" />
+          <span>Credit/Debit Card</span>
+        </label>
+        <label>
+          <input type="radio" name="payment" value="applepay" [(ngModel)]="paymentMethod" />
+          <span>Apple Pay</span>
+        </label>
+        <label>
+          <input type="radio" name="payment" value="cash" [(ngModel)]="paymentMethod" />
+          <span>Pay on Pickup/Delivery</span>
+        </label>
+      </div>
+
+      <button class="btn-primary btn-full" (click)="nextCheckoutStep()">Review Order</button>
+    </div>
+
+    <!-- STEP 3: REVIEW -->
+    <div class="checkout-step" *ngIf="checkoutStep === 2">
+      <h3>Order Review</h3>
+      
+      <div class="review-section">
+        <h4>Delivery Details</h4>
+        <p><strong>Address:</strong> {{ selectedAddress }}</p>
+        <p><strong>Method:</strong> {{ deliveryOption === 'home' ? 'Home Delivery' : 'Store Pickup at ' + selectedStore.name }}</p>
+      </div>
+
+      <div class="review-section">
+        <h4>Payment</h4>
+        <p><strong>Method:</strong> {{ paymentMethod | titlecase }}</p>
+      </div>
+
+      <div class="review-section">
+        <h4>Items</h4>
+        <div *ngFor="let item of cart" class="review-item">
+          <span>{{ item.qty }} x {{ item.product.name }}</span>
+          <strong>${{ (item.product.price * item.qty).toFixed(2) }}</strong>
+        </div>
+        <div class="review-total">
+          <span>Order Total:</span>
+          <strong>${{ cartTotal.toFixed(2) }}</strong>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-full" [disabled]="cart.length === 0 || paymentProcessing" (click)="confirmOrder()">
+        {{ paymentProcessing ? 'Processing payment...' : 'Place Order' }}
+      </button>
+      <p *ngIf="paymentProcessing" style="margin-top: 1rem; color: #00529b;">Processing transaction with {{ paymentMethod | titlecase }}, please wait…</p>
+    </div>
+  </main>
+
+  <!-- ORDER CONFIRMATION PAGE -->
+  <main class="main-content confirmation-view" *ngIf="screen === 'confirmation'">
+    <div class="confirmation-card">
+      <div class="confirmation-icon">✓</div>
+      <h2>Order Confirmed!</h2>
+      <p class="confirmation-message">Thank you for your purchase with GloboMart.</p>
+      
+      <div class="confirmation-details">
+        <p><strong>Order Number:</strong> #{{ Math.floor(Math.random() * 1000000) }}</p>
+        <p><strong>{{ deliveryOption === 'home' ? 'Delivery' : 'Pickup' }} Location:</strong> {{ selectedStore.name }}</p>
+        <p><strong>Total:</strong> ${{ cartTotal.toFixed(2) }}</p>
+      </div>
+
+      <div class="confirmation-message-box">
+        <p *ngIf="deliveryOption === 'home'">Your order will be delivered within 3-5 business days.</p>
+        <p *ngIf="deliveryOption === 'pickup'">Your order will be ready for pickup in 2 hours.</p>
+      </div>
+
+      <button class="btn-primary btn-full" (click)="setScreen('home')">Back to Home</button>
     </div>
   </main>
 </div>

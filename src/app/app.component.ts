@@ -42,6 +42,7 @@ interface CartItem {
 })
 export class AppComponent {
   title = 'Globmart';
+  Math = Math;
 
   screen: Screen = 'home';
   selectedProduct: Product | null = null;
@@ -80,6 +81,9 @@ export class AppComponent {
   deliveryOption: DeliveryOption = 'home';
   paymentMethod: PaymentMethod = 'card';
   selectedAddress = '123 Market St, San Francisco, CA';
+
+  productQuantities: { [id: number]: number } = {};
+  paymentProcessing = false;
 
   get filteredProducts() {
     const query = this.searchQuery.trim().toLowerCase();
@@ -128,13 +132,26 @@ export class AppComponent {
     }
   }
 
+  getProductQty(product: Product) {
+    if (!this.productQuantities[product.id]) {
+      this.productQuantities[product.id] = 1;
+    }
+    return this.productQuantities[product.id];
+  }
+
+  setProductQty(product: Product, qty: number) {
+    const parsed = Math.max(1, Math.min(99, Math.floor(qty)));
+    this.productQuantities[product.id] = parsed;
+  }
+
   addToCart(product: Product | null | undefined, qty = 1) {
     if (!product) return;
     const item = this.cart.find((x) => x.product.id === product.id);
+    const addedQty = Math.max(1, Math.min(99, qty));
     if (item) {
-      item.qty = Math.min(item.qty + qty, 99);
+      item.qty = Math.min(item.qty + addedQty, 99);
     } else {
-      this.cart.push({ product, qty });
+      this.cart.push({ product, qty: addedQty });
     }
   }
 
@@ -171,8 +188,17 @@ export class AppComponent {
   }
 
   confirmOrder() {
-    this.screen = 'confirmation';
-    this.clearCart();
+    if (this.paymentMethod === 'card' || this.paymentMethod === 'applepay') {
+      this.paymentProcessing = true;
+      setTimeout(() => {
+        this.paymentProcessing = false;
+        this.screen = 'confirmation';
+        this.clearCart();
+      }, 1400);
+    } else {
+      this.screen = 'confirmation';
+      this.clearCart();
+    }
   }
 
   viewProductDetails(product: Product) {
