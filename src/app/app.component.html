@@ -1,0 +1,150 @@
+<div class="globmart-shell">
+  <header class="desktop-header">
+    <div class="header-left">
+      <span class="brand" (click)="setScreen('\''home'\'')">GloboMart</span>
+    </div>
+
+    <div class="header-center">
+      <input type="search" placeholder="Search GloboMart products" [(ngModel)]="searchQuery" (keyup)="setScreen('\''listing'\'')" />
+    </div>
+
+    <div class="header-right">
+      <button class="location-btn">?? {{ selectedStore.city }}</button>
+      <button class="cart-btn">?? {{ cartCount || 0 }}</button>
+    </div>
+  </header>
+
+  <main class="main-content" *ngIf="screen === '\''home'\''">
+    <section class="hero-banner">
+      <div class="hero-text">
+        <h1>Spring Savings: Up to 30% off + free pickup</h1>
+        <p>Same-day BOPIS available in selected stores</p>
+        <button class="primary-cta" (click)="setScreen('\''listing'\'')">Shop Now</button>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1519722472768-0dc0f2a17d32?auto=format&fit=crop&w=800&q=80" alt="Family shopping" />
+      </div>
+    </section>
+
+    <section class="omnishop">
+      <h2>Omnichannel made simple</h2>
+      <p>Shop online, reserve for in-store pickup, or get fast home delivery from {{ selectedStore.name }}.</p>
+      <div class="trust-signals">
+        <span class="signal">? Free pickup today</span>
+        <span class="signal">?? 2-hour prep window</span>
+      </div>
+    </section>
+
+    <section class="categories">
+      <h2>Shop by category</h2>
+      <div class="category-strip">
+        <button class="category-item" (click)="setCategory('\''groceries'\'')">??<span>Groceries</span></button>
+        <button class="category-item" (click)="setCategory('\''electronics'\'')">??<span>Electronics</span></button>
+        <button class="category-item" (click)="setCategory('\''home'\'')">??<span>Home</span></button>
+        <button class="category-item" (click)="setCategory('\''clothing'\'')">??<span>Clothing</span></button>
+        <button class="category-item" (click)="setCategory('\''personal care'\'')">??<span>Personal Care</span></button>
+      </div>
+    </section>
+
+    <section class="featured-products">
+      <h2>Featured for you</h2>
+      <div class="product-grid">
+        <article *ngFor="let p of products" class="product-card">
+          <img [src]="p.image" [alt]="p.name" />
+          <div class="product-card-body">
+            <small class="category-label">{{ p.category | titlecase }}</small>
+            <h3>{{ p.name }}</h3>
+            <p class="price">${{ p.price.toFixed(2) }}</p>
+            <p class="rating">? {{ p.rating }}</p>
+            <div class="card-actions">
+              <button class="btn-primary" (click)="addToCart(p)">Add</button>
+              <button class="btn-secondary" (click)="viewProductDetails(p)">Details</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="inventory">
+      <h2>Check in-store availability</h2>
+      <p class="store-status">Your store: <strong>{{ selectedStore.name }}</strong> – {{ selectedStore.status }}</p>
+      <ul class="availability-list">
+        <li><span>Organic Avocados</span><strong class="available">Available</strong></li>
+        <li><span>Noise-Cancelling Headphones</span><strong class="available">Available</strong></li>
+        <li><span>Modern Sofa</span><strong class="lowstock">Low stock</strong></li>
+      </ul>
+    </section>
+
+    <section class="store-selector">
+      <h2>Choose store</h2>
+      <div class="store-chips">
+        <button *ngFor="let store of stores" (click)="changeStore(store)" [class.active]="store.id === selectedStore.id">
+          {{ store.name }} ({{ store.distance }})
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <main class="main-content listing-view" *ngIf="screen === '\''listing'\''">
+    <div class="listing-header">
+      <button class="back-link" (click)="setScreen('\''home'\'')">? Back to Home</button>
+      <h2>{{ selectedCategory === '\''all'\'' ? '\''All Products'\'' : (selectedCategory | titlecase) }}</h2>
+    </div>
+    <div class="listing-filters">
+      <select [(ngModel)]="selectedCategory">
+        <option value="all">All categories</option>
+        <option value="groceries">Groceries</option>
+        <option value="electronics">Electronics</option>
+        <option value="home">Home</option>
+        <option value="clothing">Clothing</option>
+        <option value="personal care">Personal Care</option>
+      </select>
+    </div>
+    <div class="product-grid listing-grid">
+      <article *ngFor="let p of filteredProducts" class="product-card">
+        <img [src]="p.image" [alt]="p.name" />
+        <div class="product-card-body">
+          <small class="category-label">{{ p.category | titlecase }}</small>
+          <h3>{{ p.name }}</h3>
+          <p class="description">{{ p.description }}</p>
+          <p class="price">${{ p.price.toFixed(2) }}</p>
+          <p class="rating">? {{ p.rating }}</p>
+          <div class="card-actions">
+            <button class="btn-primary" (click)="addToCart(p)">Add to Cart</button>
+            <button class="btn-secondary" (click)="viewProductDetails(p)">View Details</button>
+          </div>
+        </div>
+      </article>
+    </div>
+    <p *ngIf="filteredProducts.length === 0" class="no-results">No products found in this category.</p>
+  </main>
+
+  <main class="main-content details-view" *ngIf="screen === '\''details'\'' && selectedProduct">
+    <div class="details-header">
+      <button class="back-link" (click)="setScreen('\''listing'\'')">? Back to Products</button>
+    </div>
+    <div class="details-container">
+      <div class="details-image">
+        <img [src]="selectedProduct.image" [alt]="selectedProduct.name" />
+      </div>
+      <div class="details-info">
+        <small class="category-label">{{ selectedProduct.category | titlecase }}</small>
+        <h1>{{ selectedProduct.name }}</h1>
+        <p class="description">{{ selectedProduct.description }}</p>
+        <div class="price-rating">
+          <p class="price">${{ selectedProduct.price.toFixed(2) }}</p>
+          <p class="rating">? {{ selectedProduct.rating }} / 5</p>
+        </div>
+        <div class="stock-info">
+          <p><strong>In Stock:</strong> {{ selectedProduct.inventory }} items</p>
+          <p *ngIf="selectedProduct.nearbyAvailable" class="available">? Available at your store</p>
+          <p *ngIf="!selectedProduct.nearbyAvailable" class="lowstock">?? Limited availability</p>
+        </div>
+        <div class="details-actions">
+          <button class="btn-primary btn-large" (click)="addToCart(selectedProduct)">Add to Cart</button>
+          <button class="btn-secondary btn-large" (click)="setScreen('\''home'\'')">Continue Shopping</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
