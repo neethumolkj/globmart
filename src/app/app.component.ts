@@ -128,7 +128,8 @@ export class AppComponent {
     }
   }
 
-  addToCart(product: Product, qty = 1) {
+  addToCart(product: Product | null | undefined, qty = 1) {
+    if (!product) return;
     const item = this.cart.find((x) => x.product.id === product.id);
     if (item) {
       item.qty = Math.min(item.qty + qty, 99);

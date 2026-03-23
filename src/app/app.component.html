@@ -1,11 +1,11 @@
 <div class="globmart-shell">
   <header class="desktop-header">
     <div class="header-left">
-      <span class="brand" (click)="setScreen('\''home'\'')">GloboMart</span>
+      <span class="brand" (click)="setScreen('home')">GloboMart</span>
     </div>
 
     <div class="header-center">
-      <input type="search" placeholder="Search GloboMart products" [(ngModel)]="searchQuery" (keyup)="setScreen('\''listing'\'')" />
+      <input type="search" placeholder="Search GloboMart products" [(ngModel)]="searchQuery" (keyup)="setScreen('listing')"/>
     </div>
 
     <div class="header-right">
@@ -14,12 +14,12 @@
     </div>
   </header>
 
-  <main class="main-content" *ngIf="screen === '\''home'\''">
+  <main class="main-content" *ngIf="screen === 'home'">
     <section class="hero-banner">
       <div class="hero-text">
         <h1>Spring Savings: Up to 30% off + free pickup</h1>
         <p>Same-day BOPIS available in selected stores</p>
-        <button class="primary-cta" (click)="setScreen('\''listing'\'')">Shop Now</button>
+        <button class="primary-cta" (click)="setScreen('listing')">Shop Now</button>
       </div>
       <div class="hero-image">
         <img src="https://images.unsplash.com/photo-1519722472768-0dc0f2a17d32?auto=format&fit=crop&w=800&q=80" alt="Family shopping" />
@@ -38,11 +38,11 @@
     <section class="categories">
       <h2>Shop by category</h2>
       <div class="category-strip">
-        <button class="category-item" (click)="setCategory('\''groceries'\'')">??<span>Groceries</span></button>
-        <button class="category-item" (click)="setCategory('\''electronics'\'')">??<span>Electronics</span></button>
-        <button class="category-item" (click)="setCategory('\''home'\'')">??<span>Home</span></button>
-        <button class="category-item" (click)="setCategory('\''clothing'\'')">??<span>Clothing</span></button>
-        <button class="category-item" (click)="setCategory('\''personal care'\'')">??<span>Personal Care</span></button>
+        <button class="category-item" (click)="setCategory('groceries')">🛒<span>Groceries</span></button>
+        <button class="category-item" (click)="setCategory('electronics')">🔊<span>Electronics</span></button>
+        <button class="category-item" (click)="setCategory('home')">🏠<span>Home</span></button>
+        <button class="category-item" (click)="setCategory('clothing')">👗<span>Clothing</span></button>
+        <button class="category-item" (click)="setCategory('personal care')">🧴<span>Personal Care</span></button>
       </div>
     </section>
 
@@ -67,7 +67,7 @@
 
     <section class="inventory">
       <h2>Check in-store availability</h2>
-      <p class="store-status">Your store: <strong>{{ selectedStore.name }}</strong> � {{ selectedStore.status }}</p>
+      <p class="store-status">Your store: <strong>{{ selectedStore.name }}</strong> � {{ selectedStore.status }}</p>
       <ul class="availability-list">
         <li><span>Organic Avocados</span><strong class="available">Available</strong></li>
         <li><span>Noise-Cancelling Headphones</span><strong class="available">Available</strong></li>
@@ -85,10 +85,10 @@
     </section>
   </main>
 
-  <main class="main-content listing-view" *ngIf="screen === '\''listing'\''">
+  <main class="main-content listing-view" *ngIf="screen === 'listing'">
     <div class="listing-header">
-      <button class="back-link" (click)="setScreen('\''home'\'')">? Back to Home</button>
-      <h2>{{ selectedCategory === '\''all'\'' ? '\''All Products'\'' : (selectedCategory | titlecase) }}</h2>
+      <button class="back-link" (click)="setScreen('home')">← Back to Home</button>
+      <h2>{{ selectedCategory === 'all' ? 'All Products' : (selectedCategory | titlecase) }}</h2>
     </div>
     <div class="listing-filters">
       <select [(ngModel)]="selectedCategory">
@@ -119,9 +119,9 @@
     <p *ngIf="filteredProducts.length === 0" class="no-results">No products found in this category.</p>
   </main>
 
-  <main class="main-content details-view" *ngIf="screen === '\''details'\'' && selectedProduct">
+  <main class="main-content details-view" *ngIf="screen === 'details' && selectedProduct">
     <div class="details-header">
-      <button class="back-link" (click)="setScreen('\''listing'\'')">? Back to Products</button>
+      <button class="back-link" (click)="setScreen('listing')">← Back to Products</button>
     </div>
     <div class="details-container">
       <div class="details-image">
@@ -142,7 +142,7 @@
         </div>
         <div class="details-actions">
           <button class="btn-primary btn-large" (click)="addToCart(selectedProduct)">Add to Cart</button>
-          <button class="btn-secondary btn-large" (click)="setScreen('\''home'\'')">Continue Shopping</button>
+          <button class="btn-secondary btn-large" (click)="setScreen('home')">Continue Shopping</button>
         </div>
       </div>
     </div>
