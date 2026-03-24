@@ -63,6 +63,7 @@
               <button class="btn-primary" (click)="addToCart(p, getProductQty(p))">Add ({{ getProductQty(p) }})</button>
               <button class="btn-secondary" (click)="viewProductDetails(p)">Details</button>
             </div>
+            <button class="btn-buy-now" (click)="addToCartAndCheckout(p, getProductQty(p))">Buy Now</button>
           </div>
         </article>
       </div>
@@ -119,6 +120,7 @@
               <button class="btn-primary" (click)="addToCart(p, getProductQty(p))">Add to Cart ({{ getProductQty(p) }})</button>
               <button class="btn-secondary" (click)="viewProductDetails(p)">View Details</button>
             </div>
+            <button class="btn-buy-now" (click)="addToCartAndCheckout(p, getProductQty(p))">Buy Now</button>
           </div>
       </article>
     </div>

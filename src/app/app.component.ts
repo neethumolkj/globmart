@@ -173,6 +173,12 @@ export class AppComponent {
     this.checkoutStep = 0;
   }
 
+  addToCartAndCheckout(product: Product | null | undefined, qty = 1) {
+    if (!product) return;
+    this.addToCart(product, qty);
+    this.startCheckout();
+  }
+
   nextCheckoutStep() {
     if (this.checkoutStep < 2) {
       this.checkoutStep++;
