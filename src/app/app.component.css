@@ -218,6 +218,11 @@ html, body, app-root { min-height: 100%; margin: 0; font-family: Inter, Roboto, 
 .final-total span { font-size: 1.05rem; color: #333; }
 .amount-to-pay { font-size: 1.4rem !important; color: var(--gm-blue) !important; font-weight: 800 !important; }
 
+/* REVIEW TEXTAREA */
+.review-textarea { width: 100%; border: 1px solid var(--gm-border); border-radius: 8px; padding: 0.75rem; font-size: 0.95rem; font-family: Inter, Roboto, sans-serif; resize: vertical; min-height: 100px; transition: all 0.3s ease; }
+.review-textarea:focus { outline: none; border-color: var(--gm-blue); box-shadow: 0 0 0 3px rgba(0, 113, 220, 0.1); background: #fafbfc; }
+.review-textarea::placeholder { color: #b0b8c5; }
+
 .btn-full { width: 100%; }
 .btn-full:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -231,6 +236,10 @@ html, body, app-root { min-height: 100%; margin: 0; font-family: Inter, Roboto, 
 .confirmation-details p { margin: 0.5rem 0; font-size: 0.95rem; }
 .confirmation-message-box { background: #e6f7e6; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; color: #1b7f23; }
 .confirmation-message-box p { margin: 0.5rem 0; }
+
+.confirmation-review-section { background: #f3f8ff; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; border: 1px solid #d4e9ff; }
+.confirmation-review-section h4 { margin: 0 0 0.8rem; font-size: 1rem; color: var(--gm-blue); }
+.stored-comment { margin: 0; color: var(--gm-text); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
 
 /* UTILITIES */
 .back-link { background: none; border: none; color: var(--gm-blue); font-weight: 700; cursor: pointer; padding: 0; }

@@ -99,6 +99,10 @@ export class AppComponent implements OnInit {
   cardExpiry = '';
   cardCVV = '';
 
+  // Order review/comments
+  orderComments = '';
+  lastOrderComments = '';
+
   productQuantities: { [id: number]: number } = {};
   paymentProcessing = false;
 
@@ -246,6 +250,7 @@ export class AppComponent implements OnInit {
   startCheckout() {
     this.screen = 'checkout';
     this.checkoutStep = 0;
+    this.orderComments = ''; // Reset comments for new checkout
   }
 
   goToCheckoutStep(step: number) {
@@ -291,15 +296,27 @@ export class AppComponent implements OnInit {
   }
 
   confirmOrder() {
+    // Save order comments to localStorage with order details
+    const orderData = {
+      comments: this.orderComments,
+      timestamp: new Date().toISOString(),
+      total: (this.cartTotal * 1.08).toFixed(2),
+      itemCount: this.cart.length
+    };
+    localStorage.setItem('globmart_last_order', JSON.stringify(orderData));
+    this.lastOrderComments = this.orderComments; // Store for confirmation page display
+    
     if (this.paymentMethod === 'card' || this.paymentMethod === 'applepay') {
       this.paymentProcessing = true;
       setTimeout(() => {
         this.paymentProcessing = false;
         this.screen = 'confirmation';
+        this.orderComments = ''; // Reset comments
         this.clearCart();
       }, 1400);
     } else {
       this.screen = 'confirmation';
+      this.orderComments = ''; // Reset comments
       this.clearCart();
     }
   }

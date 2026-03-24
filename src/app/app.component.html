@@ -357,6 +357,16 @@
         <p *ngIf="paymentMethod === 'cash'"><strong>Method:</strong> 💵 Pay on {{ deliveryOption === 'home' ? 'Delivery' : 'Pickup' }}</p>
       </div>
 
+      <div class="review-section">
+        <h4>💬 Order Comments & Review</h4>
+        <textarea 
+          class="review-textarea" 
+          placeholder="Share your feedback about the products or order. Any special instructions?"
+          [(ngModel)]="orderComments"
+          rows="4"></textarea>
+        <small style="color: var(--gm-muted);">Optional - Your feedback helps us improve</small>
+      </div>
+
       <div class="review-section order-total">
         <h4 style="margin-bottom: 1rem;">💰 Price Summary</h4>
         <div class="summary-breakdown">
@@ -403,6 +413,11 @@
       <div class="confirmation-message-box">
         <p *ngIf="deliveryOption === 'home'">Your order will be delivered within 3-5 business days.</p>
         <p *ngIf="deliveryOption === 'pickup'">Your order will be ready for pickup in 2 hours.</p>
+      </div>
+
+      <div class="confirmation-review-section" *ngIf="lastOrderComments">
+        <h4>📝 Your Review & Comments</h4>
+        <p class="stored-comment">{{ lastOrderComments }}</p>
       </div>
 
       <button class="btn-primary btn-full" (click)="setScreen('home')">Back to Home</button>
