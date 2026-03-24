@@ -1,4 +1,15 @@
 <div class="globmart-shell">
+  <!-- NOTIFICATION TOAST -->
+  <div class="notification-toast" *ngIf="showNotification" [@fadeInOut]>
+    <div class="notification-content">
+      <span class="notification-icon">✓</span>
+      <div class="notification-text">
+        <div class="notification-title">{{ notificationProductName }}</div>
+        <div class="notification-message">{{ notificationMessage }}</div>
+      </div>
+    </div>
+  </div>
+
   <header class="desktop-header">
     <div class="header-left">
       <span class="brand" (click)="setScreen('home')">GloboMart</span>
@@ -10,7 +21,7 @@
 
     <div class="header-right">
       <button class="location-btn">?? {{ selectedStore.city }}</button>
-      <button class="cart-btn">?? {{ cartCount || 0 }}</button>
+      <button class="cart-btn" (click)="setScreen('cart')">?? {{ cartCount || 0 }}</button>
     </div>
   </header>
 
@@ -212,9 +223,9 @@
     </div>
 
     <div class="checkout-progress">
-      <div class="progress-step" [class.active]="checkoutStep >= 0" [class.completed]="checkoutStep > 0">1. Address</div>
-      <div class="progress-step" [class.active]="checkoutStep >= 1" [class.completed]="checkoutStep > 1">2. Payment</div>
-      <div class="progress-step" [class.active]="checkoutStep >= 2">3. Review</div>
+      <div class="progress-step" [class.active]="checkoutStep >= 0" [class.completed]="checkoutStep > 0" (click)="goToCheckoutStep(0)" style="cursor: pointer;">1. Address</div>
+      <div class="progress-step" [class.active]="checkoutStep >= 1" [class.completed]="checkoutStep > 1" (click)="goToCheckoutStep(1)" style="cursor: pointer;">2. Payment</div>
+      <div class="progress-step" [class.active]="checkoutStep >= 2" (click)="goToCheckoutStep(2)" style="cursor: pointer;">3. Review</div>
     </div>
 
     <!-- STEP 1: ADDRESS -->

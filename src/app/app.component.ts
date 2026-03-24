@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -40,7 +40,7 @@ interface CartItem {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Globmart';
   Math = Math;
 
@@ -48,6 +48,11 @@ export class AppComponent {
   selectedProduct: Product | null = null;
   selectedCategory: string = 'all';
   searchQuery: string = '';
+
+  // Notification system
+  showNotification = false;
+  notificationMessage = '';
+  notificationProductName = '';
   selectedStore: StoreInfo = {
     id: 'sf',
     name: 'San Francisco Store',
@@ -96,6 +101,44 @@ export class AppComponent {
 
   productQuantities: { [id: number]: number } = {};
   paymentProcessing = false;
+
+  constructor() {}
+
+  ngOnInit() {
+    this.loadCartFromStorage();
+  }
+
+  saveCartToStorage() {
+    const cartData = this.cart.map(item => ({
+      id: item.product.id,
+      qty: item.qty
+    }));
+    localStorage.setItem('globmart_cart', JSON.stringify(cartData));
+  }
+
+  loadCartFromStorage() {
+    const saved = localStorage.getItem('globmart_cart');
+    if (saved) {
+      try {
+        const cartData = JSON.parse(saved);
+        this.cart = cartData.map((item: any) => {
+          const product = this.products.find(p => p.id === item.id);
+          return product ? { product, qty: item.qty } : null;
+        }).filter((item: any) => item !== null);
+      } catch (e) {
+        console.error('Error loading cart from storage:', e);
+      }
+    }
+  }
+
+  showAddToCartNotification(productName: string, qty: number) {
+    this.notificationProductName = productName;
+    this.notificationMessage = `Added ${qty} item${qty > 1 ? 's' : ''} to cart`;
+    this.showNotification = true;
+    setTimeout(() => {
+      this.showNotification = false;
+    }, 3000);
+  }
 
   get filteredProducts() {
     const query = this.searchQuery.trim().toLowerCase();
@@ -177,19 +220,27 @@ export class AppComponent {
     } else {
       this.cart.push({ product, qty: addedQty });
     }
+    this.saveCartToStorage();
+    this.showAddToCartNotification(product.name, addedQty);
   }
 
   removeFromCart(item: CartItem) {
     this.cart = this.cart.filter((x) => x.product.id !== item.product.id);
+    this.saveCartToStorage();
   }
 
   updateQty(item: CartItem, delta: number) {
     item.qty = Math.max(1, item.qty + delta);
-    if (item.qty <= 0) this.removeFromCart(item);
+    if (item.qty <= 0) {
+      this.removeFromCart(item);
+    } else {
+      this.saveCartToStorage();
+    }
   }
 
   clearCart() {
     this.cart = [];
+    this.saveCartToStorage();
   }
 
   startCheckout() {
@@ -197,6 +248,28 @@ export class AppComponent {
     this.checkoutStep = 0;
   }
 
+  goToCheckoutStep(step: number) {
+    // Allow going backward without validation
+    if (step < this.checkoutStep) {
+      this.checkoutStep = step;
+      return;
+    }
+    
+    // Going forward - validate current step
+    if (step === 1 && this.checkoutStep === 0) {
+      if (this.isAddressValid) {
+        this.checkoutStep = 1;
+      }
+      return;
+    }
+    
+    if (step === 2 && this.checkoutStep === 1) {
+      if (this.paymentMethod === 'card' ? this.isCardValid : true) {
+        this.checkoutStep = 2;
+      }
+      return;
+    }
+  }
   addToCartAndCheckout(product: Product | null | undefined, qty = 1) {
     if (!product) return;
     this.addToCart(product, qty);
