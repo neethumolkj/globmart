@@ -108,6 +108,9 @@ export class AppComponent implements OnInit {
   lastProductRatings: { [id: number]: number } = {};
   ratingLabels = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
 
+  // Modal state
+  showReviewModal = false;
+
   productQuantities: { [id: number]: number } = {};
   paymentProcessing = false;
 
@@ -344,5 +347,21 @@ export class AppComponent implements OnInit {
     this.selectedProduct = product;
     this.addToRecentlyViewed(product);
     this.screen = 'details';
+  }
+
+  // Modal methods
+  openReviewModal() {
+    this.showReviewModal = true;
+  }
+
+  closeReviewModal() {
+    this.showReviewModal = false;
+  }
+
+  goToReview() {
+    this.showReviewModal = false;
+    // Could navigate to a dedicated review page or back to checkout
+    // For now, we'll go back to home
+    this.setScreen('home');
   }
 }
