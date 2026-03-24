@@ -220,21 +220,40 @@
     <!-- STEP 1: ADDRESS -->
     <div class="checkout-step" *ngIf="checkoutStep === 0">
       <h3>Delivery Address</h3>
-      <textarea placeholder="Enter your delivery address" [(ngModel)]="selectedAddress" rows="3"></textarea>
       
-      <h3>Fulfillment Method</h3>
+      <div class="form-group">
+        <label>Street Address *</label>
+        <input type="text" placeholder="123 Market St" [(ngModel)]="addressStreet" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>City *</label>
+          <input type="text" placeholder="San Francisco" [(ngModel)]="addressCity" />
+        </div>
+        <div class="form-group">
+          <label>State *</label>
+          <input type="text" placeholder="CA" [(ngModel)]="addressState" maxlength="2" />
+        </div>
+        <div class="form-group">
+          <label>ZIP Code *</label>
+          <input type="text" placeholder="94102" [(ngModel)]="addressZip" maxlength="5" />
+        </div>
+      </div>
+      
+      <h3 style="margin-top: 1.5rem;">Fulfillment Method</h3>
       <div class="radio-group">
         <label>
           <input type="radio" name="delivery" value="home" [(ngModel)]="deliveryOption" />
-          <span>Home Delivery (Free)</span>
+          <span>🏠 Home Delivery (Free)</span>
         </label>
         <label>
           <input type="radio" name="delivery" value="pickup" [(ngModel)]="deliveryOption" />
-          <span>Pick up at {{ selectedStore.name }}</span>
+          <span>🏪 Pick up at {{ selectedStore.name }}</span>
         </label>
       </div>
 
-      <button class="btn-primary btn-full" (click)="nextCheckoutStep()">Continue to Payment</button>
+      <button class="btn-primary btn-full" [disabled]="!isAddressValid" (click)="nextCheckoutStep()">Continue to Payment</button>
     </div>
 
     <!-- STEP 2: PAYMENT -->
@@ -243,19 +262,45 @@
       <div class="radio-group">
         <label>
           <input type="radio" name="payment" value="card" [(ngModel)]="paymentMethod" />
-          <span>Credit/Debit Card</span>
+          <span>💳 Credit/Debit Card</span>
         </label>
         <label>
           <input type="radio" name="payment" value="applepay" [(ngModel)]="paymentMethod" />
-          <span>Apple Pay</span>
+          <span>🍎 Apple Pay</span>
         </label>
         <label>
           <input type="radio" name="payment" value="cash" [(ngModel)]="paymentMethod" />
-          <span>Pay on Pickup/Delivery</span>
+          <span>💵 Pay on Pickup/Delivery</span>
         </label>
       </div>
 
-      <button class="btn-primary btn-full" (click)="nextCheckoutStep()">Review Order</button>
+      <div *ngIf="paymentMethod === 'card'" class="card-form">
+        <h4>Card Details</h4>
+        
+        <div class="form-group">
+          <label>Cardholder Name *</label>
+          <input type="text" placeholder="John Doe" [(ngModel)]="cardName" />
+        </div>
+
+        <div class="form-group">
+          <label>Card Number *</label>
+          <input type="text" placeholder="1234 5678 9012 3456" [(ngModel)]="cardNumber" maxlength="19" />
+          <small>16 digits required</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Expiry Date (MM/YY) *</label>
+            <input type="text" placeholder="12/25" [(ngModel)]="cardExpiry" maxlength="5" />
+          </div>
+          <div class="form-group">
+            <label>CVV *</label>
+            <input type="password" placeholder="123" [(ngModel)]="cardCVV" maxlength="4" />
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-full" [disabled]="paymentMethod === 'card' && !isCardValid" (click)="nextCheckoutStep()">Review Order</button>
     </div>
 
     <!-- STEP 3: REVIEW -->
@@ -263,32 +308,57 @@
       <h3>Order Review</h3>
       
       <div class="review-section">
-        <h4>Delivery Details</h4>
-        <p><strong>Address:</strong> {{ selectedAddress }}</p>
-        <p><strong>Method:</strong> {{ deliveryOption === 'home' ? 'Home Delivery' : 'Store Pickup at ' + selectedStore.name }}</p>
-      </div>
-
-      <div class="review-section">
-        <h4>Payment</h4>
-        <p><strong>Method:</strong> {{ paymentMethod | titlecase }}</p>
-      </div>
-
-      <div class="review-section">
-        <h4>Items</h4>
-        <div *ngFor="let item of cart" class="review-item">
-          <span>{{ item.qty }} x {{ item.product.name }}</span>
-          <strong>${{ (item.product.price * item.qty).toFixed(2) }}</strong>
+        <h4>📦 Items</h4>
+        <div class="review-items-list">
+          <div *ngFor="let item of cart" class="review-item-card">
+            <img [src]="item.product.image" [alt]="item.product.name" class="review-item-img" />
+            <div class="review-item-details">
+              <div class="review-item-name">{{ item.qty }} x {{ item.product.name }}</div>
+              <div class="review-item-category">{{ item.product.category | titlecase }}</div>
+            </div>
+            <div class="review-item-price">${{ (item.product.price * item.qty).toFixed(2) }}</div>
+          </div>
         </div>
-        <div class="review-total">
-          <span>Order Total:</span>
+      </div>
+
+      <div class="review-section">
+        <h4>📍 Delivery Details</h4>
+        <p><strong>Address:</strong> {{ formattedAddress }}</p>
+        <p><strong>Method:</strong> {{ deliveryOption === 'home' ? '🏠 Home Delivery' : '🏪 Store Pickup at ' + selectedStore.name }}</p>
+        <p *ngIf="deliveryOption === 'home'" class="delivery-time">Estimated delivery: 3-5 business days</p>
+        <p *ngIf="deliveryOption === 'pickup'" class="pickup-time">Ready for pickup in 2 hours</p>
+      </div>
+
+      <div class="review-section">
+        <h4>💳 Payment</h4>
+        <p *ngIf="paymentMethod === 'card'"><strong>Method:</strong> 💳 Credit/Debit Card • {{ cardName }}</p>
+        <p *ngIf="paymentMethod === 'applepay'"><strong>Method:</strong> 🍎 Apple Pay</p>
+        <p *ngIf="paymentMethod === 'cash'"><strong>Method:</strong> 💵 Pay on {{ deliveryOption === 'home' ? 'Delivery' : 'Pickup' }}</p>
+      </div>
+
+      <div class="review-section order-total">
+        <div class="total-row">
+          <span>Subtotal:</span>
           <strong>${{ cartTotal.toFixed(2) }}</strong>
+        </div>
+        <div class="total-row">
+          <span>Tax (estimated):</span>
+          <strong>${{ (cartTotal * 0.08).toFixed(2) }}</strong>
+        </div>
+        <div class="total-row">
+          <span>Shipping:</span>
+          <strong>Free</strong>
+        </div>
+        <div class="total-row final">
+          <span>Total:</span>
+          <strong>${{ (cartTotal * 1.08).toFixed(2) }}</strong>
         </div>
       </div>
 
       <button class="btn-primary btn-full" [disabled]="cart.length === 0 || paymentProcessing" (click)="confirmOrder()">
         {{ paymentProcessing ? 'Processing payment...' : 'Place Order' }}
       </button>
-      <p *ngIf="paymentProcessing" style="margin-top: 1rem; color: #00529b;">Processing transaction with {{ paymentMethod | titlecase }}, please wait…</p>
+      <p *ngIf="paymentProcessing" style="margin-top: 1rem; color: #00529b; text-align: center;">Processing transaction with {{ paymentMethod | titlecase }}, please wait…</p>
     </div>
   </main>
 

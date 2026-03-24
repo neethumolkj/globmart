@@ -82,6 +82,18 @@ export class AppComponent {
   paymentMethod: PaymentMethod = 'card';
   selectedAddress = '123 Market St, San Francisco, CA';
 
+  // Address form fields
+  addressStreet = '123 Market St';
+  addressCity = 'San Francisco';
+  addressState = 'CA';
+  addressZip = '94102';
+
+  // Card form fields
+  cardName = '';
+  cardNumber = '';
+  cardExpiry = '';
+  cardCVV = '';
+
   productQuantities: { [id: number]: number } = {};
   paymentProcessing = false;
 
@@ -104,6 +116,18 @@ export class AppComponent {
 
   get progressLabel() {
     return ['Address', 'Payment', 'Review'][this.checkoutStep] || 'Complete';
+  }
+
+  get formattedAddress() {
+    return `${this.addressStreet}, ${this.addressCity}, ${this.addressState} ${this.addressZip}`;
+  }
+
+  get isAddressValid() {
+    return this.addressStreet.trim() && this.addressCity.trim() && this.addressState.trim() && this.addressZip.trim();
+  }
+
+  get isCardValid() {
+    return this.cardName.trim() && this.cardNumber.replace(/\s/g, '').length === 16 && this.cardExpiry && this.cardCVV;
   }
 
   setScreen(page: Screen, product?: Product) {
