@@ -187,6 +187,37 @@ html, body, app-root { min-height: 100%; margin: 0; font-family: Inter, Roboto, 
 .total-row strong { font-weight: 700; }
 .total-row.final { border-top: 2px solid var(--gm-blue); padding-top: 0.8rem; font-size: 1.1rem; font-weight: 700; color: var(--gm-blue); }
 
+/* REVIEW ITEMS TABLE */
+.review-items-table { background: var(--gm-white); border-radius: 8px; overflow: hidden; border: 1px solid var(--gm-border); }
+.table-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 1rem; padding: 1rem; background: linear-gradient(135deg, #e8f2ff 0%, #f3f8ff 100%); border-bottom: 2px solid var(--gm-blue); font-weight: 700; color: var(--gm-blue); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--gm-border); align-items: center; transition: background-color 0.2s ease; }
+.table-row:hover { background: #f8fafc; }
+.table-row:last-child { border-bottom: none; }
+
+.col-product { display: flex; gap: 0.8rem; align-items: flex-start; }
+.product-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--gm-border); flex-shrink: 0; }
+.product-info { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; }
+.product-name { font-weight: 700; color: var(--gm-text); font-size: 0.95rem; line-height: 1.2; }
+.product-category { font-size: 0.75rem; color: var(--gm-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+
+.col-price, .col-qty, .col-total { text-align: right; font-weight: 600; color: var(--gm-text); }
+.col-price { color: var(--gm-blue); font-size: 0.95rem; }
+.col-total { color: #0b4a97; font-weight: 700; font-size: 1rem; }
+
+/* PRICE SUMMARY */
+.summary-breakdown { display: flex; flex-direction: column; gap: 0; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; font-size: 0.95rem; color: var(--gm-text); }
+.summary-row span { font-weight: 500; }
+.summary-row strong { font-weight: 700; color: var(--gm-text); }
+
+.shipping-free { color: #1b7f23; font-weight: 700; }
+
+.summary-divider { border: none; border-top: 2px solid var(--gm-border); margin: 0.5rem 0; }
+
+.final-total { padding: 1rem 0 !important; font-size: 1.15rem !important; background: linear-gradient(90deg, rgba(0, 113, 220, 0.05) 0%, rgba(0, 113, 220, 0.02) 100%); border-radius: 6px; padding: 1rem !important; margin: 0.5rem -1rem -1rem -1rem; border-radius: 0 0 8px 8px; }
+.final-total span { font-size: 1.05rem; color: #333; }
+.amount-to-pay { font-size: 1.4rem !important; color: var(--gm-blue) !important; font-weight: 800 !important; }
+
 .btn-full { width: 100%; }
 .btn-full:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -228,6 +259,11 @@ html, body, app-root { min-height: 100%; margin: 0; font-family: Inter, Roboto, 
   .card-form .form-row { grid-template-columns: 1fr 80px; }
   .review-item-card { grid-template-columns: 60px 1fr 70px; gap: 0.8rem; }
   .review-item-img { width: 60px; height: 60px; }
+
+  .table-header { grid-template-columns: 1.5fr 1fr 0.8fr 1fr; gap: 0.6rem; padding: 0.8rem; font-size: 0.8rem; }
+  .table-row { grid-template-columns: 1.5fr 1fr 0.8fr 1fr; gap: 0.6rem; padding: 0.8rem; }
+  .product-thumb { width: 50px; height: 50px; }
+  .col-price, .col-qty, .col-total { font-size: 0.85rem; }
 }
 
 @media (max-width: 480px) {
@@ -244,4 +280,13 @@ html, body, app-root { min-height: 100%; margin: 0; font-family: Inter, Roboto, 
   .review-item-card { grid-template-columns: 55px 1fr; gap: 0.6rem; }
   .review-item-img { width: 55px; height: 55px; }
   .review-item-price { text-align: left; }
+
+  .table-header { grid-template-columns: 2fr 0.7fr 0.6fr; gap: 0.4rem; padding: 0.6rem; font-size: 0.7rem; }
+  .table-row { grid-template-columns: 2fr 0.7fr 0.6fr; gap: 0.4rem; padding: 0.6rem; }
+  .col-total { display: none; }
+  .col-product { gap: 0.6rem; }
+  .product-thumb { width: 45px; height: 45px; }
+  .product-name { font-size: 0.85rem; }
+  .product-category { font-size: 0.65rem; }
+  .col-price, .col-qty { font-size: 0.8rem; }
 }

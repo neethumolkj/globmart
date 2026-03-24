@@ -319,15 +319,25 @@
       <h3>Order Review</h3>
       
       <div class="review-section">
-        <h4>📦 Items</h4>
-        <div class="review-items-list">
-          <div *ngFor="let item of cart" class="review-item-card">
-            <img [src]="item.product.image" [alt]="item.product.name" class="review-item-img" />
-            <div class="review-item-details">
-              <div class="review-item-name">{{ item.qty }} x {{ item.product.name }}</div>
-              <div class="review-item-category">{{ item.product.category | titlecase }}</div>
+        <h4>📦 Order Items</h4>
+        <div class="review-items-table">
+          <div class="table-header">
+            <div class="col-product">Product</div>
+            <div class="col-price">Unit Price</div>
+            <div class="col-qty">Qty</div>
+            <div class="col-total">Total</div>
+          </div>
+          <div *ngFor="let item of cart" class="table-row">
+            <div class="col-product">
+              <img [src]="item.product.image" [alt]="item.product.name" class="product-thumb" />
+              <div class="product-info">
+                <div class="product-name">{{ item.product.name }}</div>
+                <div class="product-category">{{ item.product.category | titlecase }}</div>
+              </div>
             </div>
-            <div class="review-item-price">${{ (item.product.price * item.qty).toFixed(2) }}</div>
+            <div class="col-price">${{ item.product.price.toFixed(2) }}</div>
+            <div class="col-qty">{{ item.qty }}</div>
+            <div class="col-total">${{ (item.product.price * item.qty).toFixed(2) }}</div>
           </div>
         </div>
       </div>
@@ -348,21 +358,25 @@
       </div>
 
       <div class="review-section order-total">
-        <div class="total-row">
-          <span>Subtotal:</span>
-          <strong>${{ cartTotal.toFixed(2) }}</strong>
-        </div>
-        <div class="total-row">
-          <span>Tax (estimated):</span>
-          <strong>${{ (cartTotal * 0.08).toFixed(2) }}</strong>
-        </div>
-        <div class="total-row">
-          <span>Shipping:</span>
-          <strong>Free</strong>
-        </div>
-        <div class="total-row final">
-          <span>Total:</span>
-          <strong>${{ (cartTotal * 1.08).toFixed(2) }}</strong>
+        <h4 style="margin-bottom: 1rem;">💰 Price Summary</h4>
+        <div class="summary-breakdown">
+          <div class="summary-row">
+            <span>Subtotal:</span>
+            <strong>${{ cartTotal.toFixed(2) }}</strong>
+          </div>
+          <div class="summary-row">
+            <span>Tax (8%):</span>
+            <strong>${{ (cartTotal * 0.08).toFixed(2) }}</strong>
+          </div>
+          <div class="summary-row">
+            <span>Shipping:</span>
+            <strong class="shipping-free">Free</strong>
+          </div>
+          <hr class="summary-divider" />
+          <div class="summary-row final-total">
+            <span>Total Amount to Pay:</span>
+            <strong class="amount-to-pay">${{ (cartTotal * 1.08).toFixed(2) }}</strong>
+          </div>
         </div>
       </div>
 

@@ -273,7 +273,7 @@ export class AppComponent implements OnInit {
   addToCartAndCheckout(product: Product | null | undefined, qty = 1) {
     if (!product) return;
     this.addToCart(product, qty);
-    this.startCheckout();
+    this.screen = 'cart';
   }
 
   nextCheckoutStep() {
