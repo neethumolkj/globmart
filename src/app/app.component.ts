@@ -110,6 +110,8 @@ export class AppComponent implements OnInit {
 
   // Modal state
   showReviewModal = false;
+  newReviewRating = 5;
+  newReviewComments = '';
 
   productQuantities: { [id: number]: number } = {};
   paymentProcessing = false;
@@ -352,16 +354,36 @@ export class AppComponent implements OnInit {
   // Modal methods
   openReviewModal() {
     this.showReviewModal = true;
+    this.newReviewRating = 5; // Reset to default
+    this.newReviewComments = ''; // Reset comments
   }
 
   closeReviewModal() {
     this.showReviewModal = false;
+    this.newReviewRating = 5;
+    this.newReviewComments = '';
   }
 
-  goToReview() {
-    this.showReviewModal = false;
-    // Could navigate to a dedicated review page or back to checkout
-    // For now, we'll go back to home
-    this.setScreen('home');
+  submitReview() {
+    if (this.newReviewComments.trim()) {
+      // Save the new review to localStorage
+      const reviewData = {
+        rating: this.newReviewRating,
+        comments: this.newReviewComments.trim(),
+        timestamp: new Date().toISOString(),
+        orderId: Math.floor(Math.random() * 1000000) // Generate a review ID
+      };
+
+      // Get existing reviews or create new array
+      const existingReviews = JSON.parse(localStorage.getItem('globmart_reviews') || '[]');
+      existingReviews.push(reviewData);
+      localStorage.setItem('globmart_reviews', JSON.stringify(existingReviews));
+
+      // Show success message (you could add a toast notification here)
+      alert('Thank you for your review! Your feedback helps us improve.');
+
+      // Close modal and reset
+      this.closeReviewModal();
+    }
   }
 }

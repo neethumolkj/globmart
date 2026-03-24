@@ -295,15 +295,24 @@ html, body, app-root { min-height: 100%; margin: 0; font-family: Inter, Roboto, 
 .modal-close:hover { background: #f0f0f0; color: var(--gm-text); }
 
 .modal-body { padding: 1.5rem; }
-.review-message { text-align: center; }
-.message-icon { font-size: 3rem; margin-bottom: 1rem; }
-.review-message h4 { margin: 0 0 1rem; color: var(--gm-text); font-size: 1.2rem; }
-.review-message p { margin: 0 0 1.5rem; color: var(--gm-muted); line-height: 1.6; font-size: 1rem; }
+.review-form { display: flex; flex-direction: column; gap: 1.5rem; }
+.form-section { margin-bottom: 1rem; }
+.form-section h4 { margin: 0 0 0.8rem; color: var(--gm-text); font-size: 1.1rem; }
 
-.review-benefits { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1.5rem; }
-.benefit-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem; background: #f8fafc; border-radius: 8px; border: 1px solid var(--gm-border); }
-.benefit-icon { font-size: 1.5rem; }
-.benefit-item span { color: var(--gm-text); font-weight: 500; }
+.star-rating-modal { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
+.star-btn-modal { background: none; border: none; font-size: 2.2rem; cursor: pointer; color: #ddd; transition: all 0.2s ease; }
+.star-btn-modal:hover { transform: scale(1.2) rotate(15deg); }
+.star-btn-modal.active { color: #ffc107; text-shadow: 0 2px 4px rgba(255, 193, 7, 0.4); }
+.rating-text-modal { font-size: 0.95rem; color: var(--gm-blue); font-weight: 600; text-align: center; }
+
+.review-textarea-modal { width: 100%; border: 1px solid var(--gm-border); border-radius: 8px; padding: 0.75rem; font-size: 0.95rem; font-family: Inter, Roboto, sans-serif; resize: vertical; min-height: 100px; transition: all 0.3s ease; }
+.review-textarea-modal:focus { outline: none; border-color: var(--gm-blue); box-shadow: 0 0 0 3px rgba(0, 113, 220, 0.1); background: #fafbfc; }
+.review-textarea-modal::placeholder { color: #b0b8c5; }
+
+.review-benefits-modal { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gm-border); }
+.benefit-item-modal { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem; background: #f8fafc; border-radius: 6px; border: 1px solid var(--gm-border); }
+.benefit-icon { font-size: 1.3rem; }
+.benefit-item-modal span { color: var(--gm-text); font-weight: 500; }
 
 .modal-footer { display: flex; gap: 1rem; padding: 1rem 1.5rem 1.5rem; border-top: 1px solid var(--gm-border); }
 .modal-footer .btn-secondary { flex: 1; }

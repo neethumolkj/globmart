@@ -499,31 +499,46 @@
       </div>
       
       <div class="modal-body">
-        <div class="review-message">
-          <div class="message-icon">🎉</div>
-          <h4>Thank you for your order!</h4>
-          <p>Your feedback helps us improve and serve you better. We appreciate you taking the time to share your thoughts about your shopping experience with GloboMart.</p>
-          
-          <div class="review-benefits">
-            <div class="benefit-item">
+        <div class="review-form">
+          <div class="form-section">
+            <h4>⭐ Rate Your Experience</h4>
+            <div class="star-rating-modal">
+              <button *ngFor="let i of [1,2,3,4,4,5]" 
+                class="star-btn-modal" 
+                [class.active]="i <= newReviewRating"
+                (click)="newReviewRating = i"
+                title="{{ i }} star{{ i !== 1 ? 's' : '' }}">
+                ⭐
+              </button>
+            </div>
+            <div class="rating-text-modal">{{ ratingLabels[newReviewRating - 1] }}</div>
+          </div>
+
+          <div class="form-section">
+            <h4>💬 Share Your Comments</h4>
+            <textarea 
+              class="review-textarea-modal" 
+              placeholder="Tell us about your experience with GloboMart. What did you like? What can we improve?"
+              [(ngModel)]="newReviewComments"
+              rows="4"></textarea>
+          </div>
+
+          <div class="review-benefits-modal">
+            <div class="benefit-item-modal">
               <span class="benefit-icon">⭐</span>
-              <span>Help other customers make better decisions</span>
+              <span>Help improve our service</span>
             </div>
-            <div class="benefit-item">
-              <span class="benefit-icon">🚀</span>
-              <span>Improve our products and services</span>
-            </div>
-            <div class="benefit-item">
-              <span class="benefit-icon">💝</span>
-              <span>Earn rewards and exclusive offers</span>
+            <div class="benefit-item-modal">
+              <span class="benefit-icon">🎁</span>
+              <span>Earn rewards points</span>
             </div>
           </div>
         </div>
       </div>
       
       <div class="modal-footer">
-        <button class="btn-secondary" (click)="closeReviewModal()">Maybe Later</button>
-        <button class="btn-primary" (click)="goToReview()">Write Review</button>
+        <button class="btn-secondary" (click)="closeReviewModal()">Cancel</button>
+        <button class="btn-primary" (click)="submitReview()" [disabled]="!newReviewComments.trim()">Submit Review</button>
       </div>
     </div>
   </div>
