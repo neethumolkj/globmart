@@ -358,7 +358,45 @@
       </div>
 
       <div class="review-section">
-        <h4>💬 Order Comments & Review</h4>
+        <h4>⭐ Order Experience Review</h4>
+        <div class="rating-section">
+          <div class="rating-label">How would you rate your shopping experience?</div>
+          <div class="star-rating">
+            <button *ngFor="let i of [1,2,3,4,5]" 
+              class="star-btn" 
+              [class.active]="i <= orderRating"
+              (click)="orderRating = i"
+              title="{{ i }} star{{ i !== 1 ? 's' : '' }}">
+              ⭐
+            </button>
+          </div>
+          <div class="rating-text">{{ ratingLabels[orderRating - 1] }}</div>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <h4>📝 Product Ratings</h4>
+        <div class="product-ratings">
+          <div *ngFor="let item of cart" class="product-rating-item">
+            <div class="product-rating-header">
+              <img [src]="item.product.image" [alt]="item.product.name" class="product-rating-img" />
+              <div class="product-rating-name">{{ item.product.name }}</div>
+            </div>
+            <div class="star-rating-compact">
+              <button *ngFor="let i of [1,2,3,4,5]" 
+                class="star-btn-small" 
+                [class.active]="i <= (productRatings[item.product.id] || 0)"
+                (click)="setProductRating(item.product.id, i)"
+                title="{{ i }} star{{ i !== 1 ? 's' : '' }}">
+                ⭐
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <h4>💬 Additional Comments</h4>
         <textarea 
           class="review-textarea" 
           placeholder="Share your feedback about the products or order. Any special instructions?"
@@ -415,9 +453,34 @@
         <p *ngIf="deliveryOption === 'pickup'">Your order will be ready for pickup in 2 hours.</p>
       </div>
 
-      <div class="confirmation-review-section" *ngIf="lastOrderComments">
-        <h4>📝 Your Review & Comments</h4>
-        <p class="stored-comment">{{ lastOrderComments }}</p>
+      <div class="confirmation-review-section" *ngIf="lastOrderRating > 0 || lastOrderComments">
+        <h4>⭐ Your Order Review</h4>
+        
+        <div class="confirmation-rating" *ngIf="lastOrderRating > 0">
+          <div class="rating-display">
+            <span class="rating-stars">{{ '⭐'.repeat(lastOrderRating) }}</span>
+            <span class="rating-label">{{ ratingLabels[lastOrderRating - 1] }} ({{ lastOrderRating }}/5)</span>
+          </div>
+        </div>
+        
+        <div class="product-ratings-summary" *ngIf="cart.length > 0">
+          <div class="ratings-title">Product Ratings:</div>
+          <div *ngFor="let item of cart" class="product-rating-display">
+            <img [src]="item.product.image" [alt]="item.product.name" class="rating-product-img" />
+            <div class="rating-product-info">
+              <div class="rating-product-name">{{ item.product.name }}</div>
+              <div class="rating-stars-display" *ngIf="lastProductRatings[item.product.id]">
+                {{ '⭐'.repeat(lastProductRatings[item.product.id]) }}
+              </div>
+              <div class="rating-stars-display" *ngIf="!lastProductRatings[item.product.id]">Not rated</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stored-comment-section" *ngIf="lastOrderComments">
+          <div class="comments-title">Your Comments:</div>
+          <p class="stored-comment">{{ lastOrderComments }}</p>
+        </div>
       </div>
 
       <button class="btn-primary btn-full" (click)="setScreen('home')">Back to Home</button>

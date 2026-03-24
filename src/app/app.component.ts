@@ -102,6 +102,11 @@ export class AppComponent implements OnInit {
   // Order review/comments
   orderComments = '';
   lastOrderComments = '';
+  orderRating = 5;
+  lastOrderRating = 0;
+  productRatings: { [id: number]: number } = {};
+  lastProductRatings: { [id: number]: number } = {};
+  ratingLabels = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
 
   productQuantities: { [id: number]: number } = {};
   paymentProcessing = false;
@@ -251,6 +256,12 @@ export class AppComponent implements OnInit {
     this.screen = 'checkout';
     this.checkoutStep = 0;
     this.orderComments = ''; // Reset comments for new checkout
+    this.orderRating = 5;
+    this.productRatings = {};
+  }
+
+  setProductRating(productId: number, rating: number) {
+    this.productRatings[productId] = rating;
   }
 
   goToCheckoutStep(step: number) {
@@ -296,15 +307,19 @@ export class AppComponent implements OnInit {
   }
 
   confirmOrder() {
-    // Save order comments to localStorage with order details
+    // Save order review data to localStorage with order details
     const orderData = {
       comments: this.orderComments,
+      orderRating: this.orderRating,
+      productRatings: this.productRatings,
       timestamp: new Date().toISOString(),
       total: (this.cartTotal * 1.08).toFixed(2),
       itemCount: this.cart.length
     };
     localStorage.setItem('globmart_last_order', JSON.stringify(orderData));
     this.lastOrderComments = this.orderComments; // Store for confirmation page display
+    this.lastOrderRating = this.orderRating;
+    this.lastProductRatings = { ...this.productRatings };
     
     if (this.paymentMethod === 'card' || this.paymentMethod === 'applepay') {
       this.paymentProcessing = true;
@@ -312,11 +327,15 @@ export class AppComponent implements OnInit {
         this.paymentProcessing = false;
         this.screen = 'confirmation';
         this.orderComments = ''; // Reset comments
+        this.productRatings = {}; // Reset product ratings
+        this.orderRating = 5; // Reset order rating
         this.clearCart();
       }, 1400);
     } else {
       this.screen = 'confirmation';
       this.orderComments = ''; // Reset comments
+      this.productRatings = {}; // Reset product ratings
+      this.orderRating = 5; // Reset order rating
       this.clearCart();
     }
   }
